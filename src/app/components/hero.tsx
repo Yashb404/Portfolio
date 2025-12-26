@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IconArrowRight } from "./icons";
 import FaultyTerminal from "../../components/FaultyTerminal";
 import TypingText from "../../components/ui/shadcn-io/typing-text/index";
@@ -8,24 +8,49 @@ import TypingText from "../../components/ui/shadcn-io/typing-text/index";
 export const Hero = () => {
   const [dpr, setDpr] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isTouching, setIsTouching] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Cap DPR to 1.5 to improve performance on high-density mobile screens
     if (typeof window !== "undefined") {
       setDpr(Math.min(window.devicePixelRatio, 1.5));
-
-      // On mobile, pause the animation after 3 seconds to save battery
-      if (window.innerWidth < 768) {
-        const timer = setTimeout(() => {
-          setIsPaused(true);
-        }, 3000);
-        return () => clearTimeout(timer);
-      }
     }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
+  const handleTouchStart = () => setIsTouching(true);
+  const handleTouchEnd = () => setIsTouching(false);
+
+  // Calculate effective pause state
+  // 1. If not visible -> Paused
+  // 2. If visible:
+  //    a. If mobile (< 768px):
+  //       - If touching -> Playing
+  //       - Else -> Paused
+  //    b. If desktop -> Playing
+  const effectivePause = !isVisible || (typeof window !== 'undefined' && window.innerWidth < 768 && !isTouching);
+
   return (
-    <section id="hero" className="min-h-screen flex flex-col justify-center items-center px-6 pt-24 relative overflow-hidden">
+    <section 
+      id="hero" 
+      ref={heroRef}
+      className="min-h-screen flex flex-col justify-center items-center px-6 pt-24 relative overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="absolute inset-0 -z-10">
         
         <FaultyTerminal
@@ -35,7 +60,7 @@ export const Hero = () => {
           gridMul={[2, 1]}
           digitSize={1.2}
           timeScale={0.5}
-          pause={isPaused}
+          pause={effectivePause}
           scanlineIntensity={0.5}
           glitchAmount={1}
           flickerAmount={1}

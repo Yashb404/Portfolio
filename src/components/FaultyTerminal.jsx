@@ -246,6 +246,7 @@ export default function FaultyTerminal({
   const containerRef = useRef(null);
   const programRef = useRef(null);
   const rendererRef = useRef(null);
+  const meshRef = useRef(null);
   const mouseRef = useRef({ x: 0.5, y: 0.5 });
   const smoothMouseRef = useRef({ x: 0.5, y: 0.5 });
   const frozenTimeRef = useRef(0);
@@ -290,6 +291,7 @@ export default function FaultyTerminal({
     [updateMouseFromClient]
   );
 
+  // Initialization Effect - Re-runs only when WebGL config changes (NOT on pause)
   useEffect(() => {
     const ctn = containerRef.current;
     if (!ctn) return;
@@ -335,6 +337,7 @@ export default function FaultyTerminal({
     programRef.current = program;
 
     const mesh = new Mesh(gl, { geometry, program });
+    meshRef.current = mesh;
 
     function resize() {
       if (!ctn || !renderer) return;
@@ -349,21 +352,66 @@ export default function FaultyTerminal({
     const resizeObserver = new ResizeObserver(() => resize());
     resizeObserver.observe(ctn);
     resize();
+    
+    ctn.appendChild(gl.canvas);
+
+    if (mouseReact && typeof window !== 'undefined') {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+      if (mouseReact && typeof window !== 'undefined') {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('touchmove', handleTouchMove);
+      }
+      if (gl.canvas.parentElement === ctn) ctn.removeChild(gl.canvas);
+      
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      // Reset refs to avoid stale usage
+      rendererRef.current = null;
+      programRef.current = null;
+      meshRef.current = null;
+    };
+  }, [
+    effectiveDpr,
+    // pause removed from here
+    scale,
+    gridMul,
+    digitSize,
+    scanlineIntensity,
+    glitchAmount,
+    flickerAmount,
+    noiseAmp,
+    chromaticAberration,
+    ditherValue,
+    curvature,
+    tintVec,
+    mouseReact,
+    mouseStrength,
+    pageLoadAnimation,
+    brightness,
+    handleMouseMove,
+    handleTouchMove
+  ]);
+
+  // Animation Loop Effect - Handles pause/play and updates
+  useEffect(() => {
+    const renderer = rendererRef.current;
+    const program = programRef.current;
+    const mesh = meshRef.current;
+
+    if (!renderer || !program || !mesh) return;
 
     const update = t => {
-      rafRef.current = requestAnimationFrame(update);
-
       if (pageLoadAnimation && loadAnimationStartRef.current === 0) {
         loadAnimationStartRef.current = t;
       }
 
-      if (!pause) {
-        const elapsed = (t * 0.001 + timeOffsetRef.current) * timeScale;
-        program.uniforms.iTime.value = elapsed;
-        frozenTimeRef.current = elapsed;
-      } else {
-        program.uniforms.iTime.value = frozenTimeRef.current;
-      }
+      const elapsed = (t * 0.001 + timeOffsetRef.current) * timeScale;
+      program.uniforms.iTime.value = elapsed;
+      frozenTimeRef.current = elapsed;
 
       if (pageLoadAnimation && loadAnimationStartRef.current > 0) {
         const animationDuration = 2000;
@@ -385,50 +433,29 @@ export default function FaultyTerminal({
       }
 
       renderer.render({ scene: mesh });
+      rafRef.current = requestAnimationFrame(update);
     };
-    rafRef.current = requestAnimationFrame(update);
-    ctn.appendChild(gl.canvas);
 
-    if (mouseReact && typeof window !== 'undefined') {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    if (!pause) {
+      // If unpausing, ensure animation flags are correct
+      if (pageLoadAnimation) {
+         program.uniforms.uUsePageLoadAnimation.value = 1;
+         // We don't reset progress here to avoid restarting animation on every pause/play
+      }
+      rafRef.current = requestAnimationFrame(update);
+    } else {
+      cancelAnimationFrame(rafRef.current);
+      // Render one frame to ensure it's not blank
+      // Force visibility when paused
+      program.uniforms.uPageLoadProgress.value = 1;
+      program.uniforms.uUsePageLoadAnimation.value = 0;
+      renderer.render({ scene: mesh });
     }
 
     return () => {
       cancelAnimationFrame(rafRef.current);
-      resizeObserver.disconnect();
-      if (mouseReact && typeof window !== 'undefined') {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('touchmove', handleTouchMove);
-      }
-      if (gl.canvas.parentElement === ctn) ctn.removeChild(gl.canvas);
-      
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      loadAnimationStartRef.current = 0;
-      timeOffsetRef.current = Math.random() * 100;
     };
-  }, [
-    effectiveDpr,
-    pause,
-    timeScale,
-    scale,
-    gridMul,
-    digitSize,
-    scanlineIntensity,
-    glitchAmount,
-    flickerAmount,
-    noiseAmp,
-    chromaticAberration,
-    ditherValue,
-    curvature,
-    tintVec,
-    mouseReact,
-    mouseStrength,
-    pageLoadAnimation,
-    brightness,
-    handleMouseMove,
-    handleTouchMove
-  ]);
+  }, [pause, timeScale, mouseReact, pageLoadAnimation]);
 
   return <div ref={containerRef} className={`faulty-terminal-container ${className}`} style={style} {...rest} />;
 }
