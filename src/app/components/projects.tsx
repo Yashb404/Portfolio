@@ -91,8 +91,6 @@ export const Projects = () => (
             </div>
           );
         })}
-        
-        {/* 4th Card - View All Projects */}
         <a
           href="/projects"
           className="group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up"

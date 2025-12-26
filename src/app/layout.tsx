@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "YashB404",
-  description: "Rust, Solana Blockchain & Backend Development",
+  description: "Tech Lead at GDG-MUJ |Rust, Solana Blockchain & Backend Development",
 };
 
 export default function RootLayout({

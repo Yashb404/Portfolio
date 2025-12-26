@@ -7,18 +7,15 @@ export const SmoothScroll = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Only handle hash navigation on the home page
     if (pathname !== "/") return;
 
     const handleHashScroll = () => {
       const hash = window.location.hash;
       if (hash) {
-        // Remove the # symbol
         const id = hash.substring(1);
         const element = document.getElementById(id);
         
         if (element) {
-          // Calculate offset for fixed navbar (64px height)
           const offset = 64;
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.pageYOffset - offset;
@@ -31,18 +28,14 @@ export const SmoothScroll = () => {
       }
     };
 
-    // Only handle initial hash on page load if there's actually a hash in the URL
-    // Add a small delay to ensure page is fully rendered
     const timeoutId = setTimeout(() => {
       if (window.location.hash) {
         handleHashScroll();
       }
     }, 100);
 
-    // Handle hash changes (e.g., when clicking anchor links)
     window.addEventListener("hashchange", handleHashScroll);
 
-    // Also handle clicks on anchor links
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest("a[href^='#']");
@@ -63,8 +56,6 @@ export const SmoothScroll = () => {
               top: offsetPosition,
               behavior: "smooth",
             });
-
-            // Update URL without triggering scroll
             window.history.pushState(null, "", href);
           }
         }

@@ -7,8 +7,6 @@ export const About = () => (
   <section id="about" className="py-32 px-6 bg-void relative">
     <div className="absolute top-0 left-0 w-full h-px bg-border-gray"></div>
     <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-      
-      {/* LEFT SIDE: SKILLS LIST */}
       <div className="h-full flex flex-col justify-center">
         <div className="mb-10">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
@@ -17,13 +15,8 @@ export const About = () => (
           <div className="h-1 w-20 bg-white"></div>
         </div>
 
-        {/* Categorized Grid */}
         <div className="grid grid-cols-2 gap-x-12 gap-y-8">
-          
-          {/* Column 1 */}
           <div className="space-y-8">
-            
-            {/* Blockchain Section */}
             <div>
               <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4 border-b border-gray-700 pb-2">
                 Blockchain
@@ -37,7 +30,6 @@ export const About = () => (
               </ul>
             </div>
 
-            {/* Backend Section */}
             <div>
               <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4 border-b border-gray-700 pb-2">
                 Backend & Infra
@@ -51,7 +43,6 @@ export const About = () => (
               </ul>
             </div>
 
-            {/* Databases */}
             <div>
               <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4 border-b border-gray-700 pb-2">
                 Databases
@@ -65,10 +56,7 @@ export const About = () => (
             </div>
           </div>
 
-          {/* Column 2 */}
           <div className="space-y-8">
-            
-            {/* Languages */}
             <div>
               <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4 border-b border-gray-700 pb-2">
                 Languages
@@ -82,7 +70,6 @@ export const About = () => (
               </ul>
             </div>
 
-            {/* Frontend */}
             <div>
               <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4 border-b border-gray-700 pb-2">
                 Frontend
@@ -94,7 +81,6 @@ export const About = () => (
               </ul>
             </div>
 
-            {/* Security */}
             <div>
               <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4 border-b border-gray-700 pb-2">
                 Cybersecurity
@@ -111,7 +97,6 @@ export const About = () => (
         </div>
       </div>
 
-      {/* RIGHT SIDE: VISUALIZATION */}
       <TechOrbit />
       
     </div>

@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Navbar } from '../components/navbar';
 
-// --- Icons ---
 const IconArrowRight = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
 );
@@ -13,7 +12,6 @@ const IconLock = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 );
 
-// --- Data ---
 const projects = [
   
   {
@@ -59,7 +57,7 @@ const projects = [
     tech: ["Solana", "Anchor", "Rust", "TypeScript", "React","Fuzzing","Cybersecurity"],
     imageSeed: "solana",
     image: "/projects/School-of-Solana.png",
-    link: null,
+    link: "https://github.com/School-of-Solana",
   }
   ,
   {
@@ -69,11 +67,9 @@ const projects = [
     tech: ["Solana", "Anchor", "Rust", "TypeScript", "React"],
     imageSeed: "solana",
     image: "/projects/solana-bootcamp.png",
-    link: null,
+    link: "https://github.com/Yashb404/Solanabootcamp-2024/",
   }
 ];
-
-// --- Sub-Components ---
 
 const TechBadge = ({ tech }: { tech: string }) => (
   <span className="px-2 py-1 text-[10px] md:text-xs font-mono border border-gray-700 text-gray-400 rounded-sm uppercase tracking-wider">
@@ -90,9 +86,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
       viewport={{ once: true }}
       className="group relative flex flex-col bg-terminal-gray border border-border-gray hover:border-white transition-colors duration-300 overflow-hidden"
     >
-      {/* Image Section */}
       <div className="relative h-72 w-full overflow-hidden bg-black">
-        {/* Project Image with Grayscale Filter - Use project.image if available, otherwise placeholder */}
         {project.image ? (
           <Image 
             src={project.image}
@@ -108,10 +102,8 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
             className="w-full h-full object-cover opacity-60 grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-40"
           />
         )}
-        {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-linear-to-t from-terminal-gray to-transparent opacity-90"></div>
-        
-        {/* Floating Tech Badges on Image */}
+
         <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2">
           {project.tech.slice(0, 3).map((t, i) => (
             <span key={i} className="text-[10px] font-mono text-white bg-black/80 px-2 py-1 rounded backdrop-blur-sm border border-white/20">
@@ -121,9 +113,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
         </div>
       </div>
 
-      {/* Content Section */}
       <div className="p-6 flex flex-col grow relative">
-        {/* Glitch line decoration */}
         <div className="absolute top-0 left-6 right-6 h-px bg-white/20 group-hover:bg-white transition-colors"></div>
 
         <div className="mb-2">
@@ -164,16 +154,12 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
   );
 };
 
-// --- Main Page Component ---
-
 const ProjectsPage = () => {
   return (
     <div className="min-h-screen bg-void text-white font-sans">
       <Navbar />
       <div className="pt-24 pb-20 px-6">
-      
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-16">
+        <div className="max-w-7xl mx-auto mb-16">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -190,28 +176,26 @@ const ProjectsPage = () => {
             A collection of full-stack applications, blockchain experiments, and research contributions.
           </p>
         </motion.div>
-      </div>
+        </div>
 
-      {/* Projects Grid */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-        {projects.map((project, index) => (
-          <ProjectCard key={index} project={project} index={index} />
-        ))}
-      </div>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+          {projects.map((project, index) => (
+            <ProjectCard key={index} project={project} index={index} />
+          ))}
+        </div>
 
-      {/* Footer / CTA */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        className="max-w-7xl mx-auto mt-24 text-center"
-      >
-        <p className="text-gray-500 font-mono text-sm mb-4">
-          INTERESTED IN COLLABORATION?
-        </p>
-        <a href="http://localhost:3000/#socials" className="inline-block border border-white text-white px-8 py-3 hover:bg-white hover:text-black transition-all duration-300 font-mono text-sm font-bold">
-          INITIATE CONTACT
-        </a>
-      </motion.div>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          className="max-w-7xl mx-auto mt-24 text-center"
+        >
+          <p className="text-gray-500 font-mono text-sm mb-4">
+            INTERESTED IN COLLABORATION?
+          </p>
+          <a href="http://localhost:3000/#socials" className="inline-block border border-white text-white px-8 py-3 hover:bg-white hover:text-black transition-all duration-300 font-mono text-sm font-bold">
+            INITIATE CONTACT
+          </a>
+        </motion.div>
       </div>
     </div>
   );

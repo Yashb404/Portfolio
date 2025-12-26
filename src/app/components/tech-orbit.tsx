@@ -2,8 +2,6 @@
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
 
-// --- 1. MATH UTILITIES (Ported from your provided logic) ---
-
 type Vec3 = [number, number, number];
 type Matrix3x3 = [Vec3, Vec3, Vec3];
 
@@ -56,7 +54,6 @@ const MATH = {
     return v1.map((c1, i) => c1 - v2[i]) as Vec3;
   },
 
-  // Rotate around an arbitrary vector [x,y,z] by angle theta
   rotateVM: (theta: number) => ([ux, uy, uz]: Vec3): Matrix3x3 => {
     const c = MATH.cos(theta);
     const s = MATH.sin(theta);
@@ -110,8 +107,6 @@ const MATH = {
   },
 };
 
-// --- 2. ICONS & DATA ---
-
 const techStack = [
   "Rust",
   "Solana",
@@ -161,8 +156,6 @@ const getTechIcon = (name: string) => {
 
   const src = icons[name];
   if (!src) return null;
-
-  // Invert colors only for Rust
   const isRust = name === "Rust";
 
   return (
@@ -175,27 +168,22 @@ const getTechIcon = (name: string) => {
   );
 };
 
-// --- 3. COMPONENT ---
-
 export const TechOrbit = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef<number | null>(null);
 
-  // State for physics
   const [matrix, setMatrix] = useState<Matrix3x3>([
     [1, 0, 0],
     [0, 1, 0],
     [0, 0, 1],
   ]);
 
-  // Spin state
-  const spinAxis = useRef<Vec3>([1, 0, 0]); // Axis of rotation
-  const spinSpeed = useRef(0.0005); // Speed of rotation
+  const spinAxis = useRef<Vec3>([1, 0, 0]);
+  const spinSpeed = useRef(0.0005);
   const isDragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
   const lastTime = useRef(0);
 
-  // Calculate initial points (Fibonacci Sphere)
   const points = useMemo(() => {
     const count = techStack.length;
     const radius = 180;
@@ -209,14 +197,11 @@ export const TechOrbit = () => {
     });
   }, []);
 
-  // Animation Loop
   useEffect(() => {
     const animate = (time: number) => {
-      // Delta time for smooth animation
       const delta = time - lastTime.current;
       lastTime.current = time;
 
-      // Determine Rotation Matrix for this frame
       let rotationMatrix: Matrix3x3 = [
         [1, 0, 0],
         [0, 1, 0],
@@ -224,25 +209,16 @@ export const TechOrbit = () => {
       ];
 
       if (isDragging.current) {
-        // While dragging, we don't auto spin.
-        // However, the drag logic usually happens in mouse move, not here.
-        // If we wanted momentum, we'd add it here.
       } else {
-        // Idle rotation: Rotate around the current spinAxis
         if (spinSpeed.current !== 0) {
-          rotationMatrix = MATH.rotateVM(spinSpeed.current * (delta || 16))(
-            spinAxis.current
-          );
-          // Apply friction
+          rotationMatrix = MATH.rotateVM(spinSpeed.current * (delta || 16))(spinAxis.current);
           spinSpeed.current *= 0.98;
-          // Maintain a minimum "soft" rotation
           if (Math.abs(spinSpeed.current) < 0.0005) {
             spinSpeed.current = spinSpeed.current > 0 ? 0.0005 : -0.0005;
           }
         }
       }
 
-      // Update accumulated matrix
       setMatrix((prev) => MATH.multM(rotationMatrix, prev));
 
       rafRef.current = requestAnimationFrame(animate);
@@ -254,11 +230,10 @@ export const TechOrbit = () => {
     };
   }, []);
 
-  // Drag Logic
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
     lastPos.current = { x: e.clientX, y: e.clientY };
-    spinSpeed.current = 0; // Stop auto-spin when grabbed
+    spinSpeed.current = 0;
   };
 
   useEffect(() => {
@@ -268,24 +243,15 @@ export const TechOrbit = () => {
       const deltaX = e.clientX - lastPos.current.x;
       const deltaY = e.clientY - lastPos.current.y;
 
-      // Sensitivity
       const theta = Math.sqrt(deltaX * deltaX + deltaY * deltaY) * 0.005;
 
-      if (theta < 0.001) return; // Ignore tiny movements
-
-      // The axis of rotation is perpendicular to the drag vector
-      // Drag vector [deltaX, deltaY]. Normal vector in 3D is roughly [-deltaY, deltaX, 0]
+      if (theta < 0.001) return;
       const axis = MATH.normV([-deltaY, deltaX, 0] as Vec3);
 
-      // Apply rotation for this specific drag frame
       const dragMatrix = MATH.rotateVM(theta)(axis);
-
-      // Update global matrix
       setMatrix((prev) => MATH.multM(dragMatrix, prev));
-
-      // Update spin state for inertia (so it keeps spinning in this direction)
       spinAxis.current = axis;
-      spinSpeed.current = theta * 2; // Add some boost
+      spinSpeed.current = theta * 2;
 
       lastPos.current = { x: e.clientX, y: e.clientY };
     };
@@ -302,23 +268,13 @@ export const TechOrbit = () => {
     };
   }, []);
 
-  // Project 3D points to 2D
   const renderedPoints = useMemo(() => {
     const result = points.map((p) => {
-      // 1. Rotate point
       const rotated = MATH.multVectorWithMatrix(matrix)([p.x, p.y, p.z]);
+      const zNorm = rotated[2] / 180;
+      const scale = 1.2 - zNorm * 0.5;
 
-      // 2. Project to 2D
-      // Scale factor based on Z.
-      // In provided code: scale = (20 - zs * 8) * ...
-      // Here zs is rotated[2].
-      // Normalized z is roughly -180 to 180.
-
-      const zNorm = rotated[2] / 180; // -1 to 1 approx
-      const scale = 1.2 - zNorm * 0.5; // Front is big, back is small
-
-      const opacity =
-        rotated[2] < 0 ? 1 : (1.2 - zNorm) / 2; // Front opaque, back transparent
+      const opacity = rotated[2] < 0 ? 1 : (1.2 - zNorm) / 2;
 
       return {
         ...p,
@@ -330,7 +286,6 @@ export const TechOrbit = () => {
       };
     });
 
-    // Sort by Z (depth) so front items render on top
     return result.sort((a, b) => a.rz - b.rz);
   }, [points, matrix]);
 
@@ -349,15 +304,13 @@ export const TechOrbit = () => {
               transform: `translate3d(${p.rx}px, ${p.ry}px, 0) scale(${p.scale})`,
               opacity: p.opacity,
               zIndex: Math.round(p.rz + 200),
-              width: "60px", // Base container size
+              width: "60px",
               height: "60px",
             }}
           >
-            {/* Icon */}
             <div className="w-10 h-10 md:w-12 md:h-12 drop-shadow-2xl">
               {getTechIcon(p.tech)}
             </div>
-            {/* Label - only show if front-facing */}
             {p.opacity > 0.6 && (
               <span className="text-[10px] text-white font-mono mt-1 bg-black/50 px-1 rounded backdrop-blur-sm">
                 {p.tech}
