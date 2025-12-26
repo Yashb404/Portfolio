@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { IconArrowRight } from "./icons";
 
 const projectData = [
@@ -24,6 +24,98 @@ const projectData = [
   },
 ];
 
+type Project = (typeof projectData)[number];
+
+const ProjectCard = ({ project, idx }: { project: Project; idx: number }) => {
+  const [isActive, setIsActive] = useState(false);
+
+  const handleClick = () => {
+    setIsActive((prev) => !prev);
+  };
+
+  const cardClassName = `group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up ${
+    isActive ? "bg-white border-white -translate-y-1" : ""
+  }`;
+
+  const style = { animationDelay: `${idx * 100}ms` };
+
+  const content = (
+    <>
+      <div className="p-8 relative z-10">
+        <div className="flex justify-between items-start mb-6">
+          <h3
+            className={`text-xl font-bold text-white group-hover:text-black transition-colors ${
+              isActive ? "text-black" : ""
+            }`}
+          >
+            {project.title}
+          </h3>
+          {project.link && (
+            <IconArrowRight
+              className={`w-5 h-5 text-gray-500 group-hover:text-black group-hover:translate-x-1 transition-all ${
+                isActive ? "text-black translate-x-1" : ""
+              }`}
+            />
+          )}
+        </div>
+
+        <p className="font-mono text-gray-400 text-sm mb-6">{project.desc}</p>
+
+        <div className="flex flex-wrap gap-2">
+          {project.tech.map((t) => (
+            <span
+              key={t}
+              className={`text-xs font-mono border border-gray-600 px-2 py-1 rounded group-hover:border-black group-hover:text-black transition-colors text-gray-300 ${
+                isActive ? "border-black text-black" : ""
+              }`}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div
+        className={`absolute top-0 right-0 w-8 h-8 border-t border-r border-gray-500 opacity-50 group-hover:border-black ${
+          isActive ? "border-black" : ""
+        }`}
+      ></div>
+      <div
+        className={`absolute bottom-0 left-0 w-8 h-8 border-b border-l border-gray-500 opacity-50 group-hover:border-black ${
+          isActive ? "border-black" : ""
+        }`}
+      ></div>
+    </>
+  );
+
+  if (project.link) {
+    return (
+      <a
+        key={project.title}
+        href={project.link}
+        target="_blank"
+        rel="noreferrer"
+        className={cardClassName}
+        style={style}
+        onClick={handleClick}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div
+      key={project.title}
+      className={cardClassName}
+      style={style}
+      onClick={handleClick}
+    >
+      {content}
+    </div>
+  );
+};
+
 export const Projects = () => (
   <section id="projects" className="py-32 px-6 bg-void relative">
     <div className="absolute top-0 left-0 w-full h-px bg-border-gray"></div>
@@ -33,64 +125,9 @@ export const Projects = () => (
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {projectData.map((project, idx) => {
-          const content = (
-            <>
-              <div className="p-8 relative z-10">
-                <div className="flex justify-between items-start mb-6">
-                  <h3 className="text-xl font-bold text-white group-hover:text-black transition-colors">
-                    {project.title}
-                  </h3>
-                  {project.link && (
-                    <IconArrowRight className="w-5 h-5 text-gray-500 group-hover:text-black group-hover:translate-x-1 transition-all" />
-                  )}
-                </div>
-
-                <p className="font-mono text-gray-400 text-sm mb-6">
-                  {project.desc}
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((t) => (
-                    <span
-                      key={t}
-                      className="text-xs font-mono border border-gray-600 px-2 py-1 rounded group-hover:border-black group-hover:text-black transition-colors text-gray-300"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-gray-500 opacity-50 group-hover:border-black"></div>
-              <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-gray-500 opacity-50 group-hover:border-black"></div>
-            </>
-          );
-
-          const className = "group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up";
-          const style = { animationDelay: `${idx * 100}ms` };
-
-          return project.link ? (
-            <a
-              key={project.title}
-              href={project.link}
-              target="_blank"
-              rel="noreferrer"
-              className={className}
-              style={style}
-            >
-              {content}
-            </a>
-          ) : (
-            <div
-              key={project.title}
-              className={className}
-              style={style}
-            >
-              {content}
-            </div>
-          );
-        })}
+        {projectData.map((project, idx) => (
+          <ProjectCard key={project.title} project={project} idx={idx} />
+        ))}
         <a
           href="/projects"
           className="group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up"

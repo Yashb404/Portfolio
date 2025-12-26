@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Navbar } from '../components/navbar';
@@ -87,13 +87,18 @@ const TechBadge = ({ tech }: { tech: string }) => (
 );
 
 const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: number }) => {
+  const [isActive, setIsActive] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
-      className="group relative flex flex-col bg-terminal-gray border border-border-gray hover:border-white transition-colors duration-300 overflow-hidden"
+      className={`group relative flex flex-col bg-terminal-gray border border-border-gray hover:border-white transition-colors duration-300 overflow-hidden ${
+        isActive ? 'border-white -translate-y-1' : ''
+      }`}
+      onClick={() => setIsActive((prev) => !prev)}
     >
       <div className="relative h-72 w-full overflow-hidden bg-black">
         {project.image ? (
@@ -101,14 +106,18 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
             src={project.image}
             alt={project.title}
             fill
-            className="object-cover opacity-60 grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-40"
+            className={`object-cover opacity-60 grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-40 ${
+              isActive ? 'scale-105 grayscale-0 opacity-40' : ''
+            }`}
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         ) : (
           <img 
             src={`https://placehold.co/600x400/111/FFF?text=${project.title.replace(/\s/g, '+')}`}
             alt={project.title}
-            className="w-full h-full object-cover opacity-60 grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-40"
+            className={`w-full h-full object-cover opacity-60 grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-40 ${
+              isActive ? 'scale-105 grayscale-0 opacity-40' : ''
+            }`}
           />
         )}
         <div className="absolute inset-0 bg-linear-to-t from-terminal-gray to-transparent opacity-90"></div>
@@ -123,7 +132,11 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
       </div>
 
       <div className="p-6 flex flex-col grow relative">
-        <div className="absolute top-0 left-6 right-6 h-px bg-white/20 group-hover:bg-white transition-colors"></div>
+        <div
+          className={`absolute top-0 left-6 right-6 h-px bg-white/20 group-hover:bg-white transition-colors ${
+            isActive ? 'bg-white' : ''
+          }`}
+        ></div>
 
         <div className="mb-2">
           <span className="text-xs font-mono text-gray-500 mb-1 block">{project.subtitle}</span>
