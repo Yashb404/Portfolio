@@ -292,7 +292,7 @@ export const TechOrbit = () => {
   return (
     <div
       ref={containerRef}
-      className="w-full h-125 relative flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
+      className="w-full h-125 relative z-0 flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
       onMouseDown={handleMouseDown}
     >
       <div className="relative w-full h-full">
