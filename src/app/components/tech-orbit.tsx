@@ -179,7 +179,7 @@ export const TechOrbit = () => {
   ]);
 
   const spinAxis = useRef<Vec3>([1, 0, 0]);
-  const spinSpeed = useRef(0.0005);
+  const spinSpeed = useRef(0.0002);
   const isDragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
   const lastTime = useRef(0);
@@ -230,20 +230,30 @@ export const TechOrbit = () => {
     };
   }, []);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const startDrag = (x: number, y: number) => {
     isDragging.current = true;
-    lastPos.current = { x: e.clientX, y: e.clientY };
+    lastPos.current = { x, y };
     spinSpeed.current = 0;
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    startDrag(e.clientX, e.clientY);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    startDrag(touch.clientX, touch.clientY);
+  };
+
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (clientX: number, clientY: number) => {
       if (!isDragging.current) return;
 
-      const deltaX = e.clientX - lastPos.current.x;
-      const deltaY = e.clientY - lastPos.current.y;
+      const deltaX = clientX - lastPos.current.x;
+      const deltaY = clientY - lastPos.current.y;
 
-      const theta = Math.sqrt(deltaX * deltaX + deltaY * deltaY) * 0.005;
+      const theta = Math.sqrt(deltaX * deltaX + deltaY * deltaY) * 0.0015;
 
       if (theta < 0.001) return;
       const axis = MATH.normV([-deltaY, deltaX, 0] as Vec3);
@@ -251,20 +261,34 @@ export const TechOrbit = () => {
       const dragMatrix = MATH.rotateVM(theta)(axis);
       setMatrix((prev) => MATH.multM(dragMatrix, prev));
       spinAxis.current = axis;
-      spinSpeed.current = theta * 2;
+      spinSpeed.current = theta * 0.5;
 
-      lastPos.current = { x: e.clientX, y: e.clientY };
+      lastPos.current = { x: clientX, y: clientY };
     };
 
-    const handleMouseUp = () => {
+    const handleMouseMove = (e: MouseEvent) => {
+      handlePointerMove(e.clientX, e.clientY);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      handlePointerMove(touch.clientX, touch.clientY);
+    };
+
+    const endDrag = () => {
       isDragging.current = false;
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mouseup", endDrag);
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", endDrag);
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mouseup", endDrag);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", endDrag);
     };
   }, []);
 
@@ -292,8 +316,9 @@ export const TechOrbit = () => {
   return (
     <div
       ref={containerRef}
-      className="w-full h-125 relative flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
+      className="w-full h-125 relative z-0 flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
       onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
     >
       <div className="relative w-full h-full">
         {renderedPoints.map((p) => (

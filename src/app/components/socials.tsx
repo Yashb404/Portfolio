@@ -15,7 +15,7 @@ export const Socials = () => (
       <h2 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight">
         03. MY SOCIALS
       </h2>
-      <p className="font-mono text-gray-400 mb-12">
+      <p className="font-mono text-2xl text-gray-400 mb-12">
           Reach out for collaborations or just a friendly chat! 
       </p>
 
@@ -26,7 +26,7 @@ export const Socials = () => (
             href={social.url}
             target="_blank"
             rel="noreferrer"
-            className="w-16 h-16 border border-border-gray flex items-center justify-center text-gray-400 hover:text-black hover:border-black hover:bg-white transition-all duration-300 transform hover:-translate-y-1"
+            className="w-25 h-25 border border-border-gray flex items-center justify-center text-gray-400 hover:text-black hover:border-black hover:bg-white transition-all duration-300 transform hover:-translate-y-1"
           >
             {social.icon}
           </a>
@@ -34,7 +34,7 @@ export const Socials = () => (
       </div>
 
       <div className="mt-20 font-mono text-xs text-gray-600">
-        <p>© 2024 YASHASWI BHARDWAJ.</p>
+        <p>© 2025 YASHASWI BHARDWAJ.</p>
         <p>BUILT WITH REACT, TYPESCRIPT & SHADCN.</p>
       </div>
     </div>
