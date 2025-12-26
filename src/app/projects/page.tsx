@@ -65,7 +65,7 @@ const projects = [
     description: "I had been learning rust for a month when I saw ackee school of solana on twitter and decided to join in , best decision. There structured course with assignments that held you accountable taught me a lot more than I may have learned on my own. I ended it with my first complete web3 project ",
     tech: ["Solana", "Anchor", "Rust", "TypeScript", "React","Fuzzing","Cybersecurity"],
     imageSeed: "solana",
-    image: "/projects/School-of-Solana.png",
+    image: "/projects/school-of-solana.png",
     link: "https://github.com/School-of-Solana",
   }
   ,
