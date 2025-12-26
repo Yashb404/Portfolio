@@ -16,7 +16,7 @@ export const Socials = () => (
         03. MY SOCIALS
       </h2>
       <p className="font-mono text-gray-400 mb-12">
-          Reach out for collaborations or just a friendly chat.
+          Reach out for collaborations or just a friendly chat! 
       </p>
 
       <div className="flex justify-center gap-6">
@@ -26,7 +26,7 @@ export const Socials = () => (
             href={social.url}
             target="_blank"
             rel="noreferrer"
-            className="w-16 h-16 border border-border-gray flex items-center justify-center text-gray-400 hover:text-white hover:border-white hover:bg-white transition-all duration-300 transform hover:-translate-y-1"
+            className="w-16 h-16 border border-border-gray flex items-center justify-center text-gray-400 hover:text-black hover:border-black hover:bg-white transition-all duration-300 transform hover:-translate-y-1"
           >
             {social.icon}
           </a>
@@ -35,7 +35,7 @@ export const Socials = () => (
 
       <div className="mt-20 font-mono text-xs text-gray-600">
         <p>© 2024 YASHASWI BHARDWAJ.</p>
-        <p>BUILT WITH REACT, TYPESCRIPT & TAILWIND.</p>
+        <p>BUILT WITH REACT, TYPESCRIPT & SHADCN.</p>
       </div>
     </div>
   </section>

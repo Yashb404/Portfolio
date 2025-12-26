@@ -51,6 +51,15 @@ const projects = [
     link: null, 
   },
   {
+    title: "Tech Lead at GDGoc-MUJ",
+    subtitle: "Experience",
+    description: "As Technical Lead, I guide and mentor teams on multiple community-driven projects, overseeing the technical architecture and development lifecycle.Facilitated hands on workshops and events",
+    tech: [],
+    imageSeed: "solana",
+    image: "/projects/GDG.png",
+    link: "https://gdg.community.dev/gdg-on-campus-manipal-university-jaipur-india/",
+  },
+  {
     title: "Ackee Blockchain School of Solana",
     subtitle: "Solana Bootcamp",
     description: "I had been learning rust for a month when I saw ackee school of solana on twitter and decided to join in , best decision. There structured course with assignments that held you accountable taught me a lot more than I may have learned on my own. I ended it with my first complete web3 project ",
@@ -170,7 +179,7 @@ const ProjectsPage = () => {
              <span className="text-sm font-mono text-gray-500">PORTFOLIO</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white">
-            SELECTED WORK
+            PROOF OF WORK
           </h1>
           <p className="mt-4 text-gray-400 max-w-2xl font-light">
             A collection of full-stack applications, blockchain experiments, and research contributions.

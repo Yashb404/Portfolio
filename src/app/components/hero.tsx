@@ -22,7 +22,7 @@ export const Hero = () => {
           scanlineIntensity={0.5}
           glitchAmount={1}
           flickerAmount={1}
-          noiseAmp={1}
+          noiseAmp={0.5}
           chromaticAberration={0.01}
           dither={0}
           curvature={0.1}
@@ -58,10 +58,9 @@ export const Hero = () => {
                 pauseDuration={1500}
                 showCursor={true}
                 cursorCharacter="|"
-                
                 className="text-white"
                 textColors={['#ffffff', '#ffffff', '#ffffff']}
-                variableSpeed={{ min: 50, max: 50 }}
+                variableSpeed={{ min: 20, max: 20 }}
               />
             </p>
           </div>
