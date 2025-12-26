@@ -109,7 +109,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
           />
         )}
         {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-terminal-gray to-transparent opacity-90"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-terminal-gray to-transparent opacity-90"></div>
         
         {/* Floating Tech Badges on Image */}
         <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2">
@@ -122,7 +122,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
       </div>
 
       {/* Content Section */}
-      <div className="p-6 flex flex-col flex-grow relative">
+      <div className="p-6 flex flex-col grow relative">
         {/* Glitch line decoration */}
         <div className="absolute top-0 left-6 right-6 h-px bg-white/20 group-hover:bg-white transition-colors"></div>
 
@@ -131,7 +131,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
           <h3 className="text-xl font-bold text-white tracking-tight">{project.title}</h3>
         </div>
 
-        <p className="text-sm text-gray-400 leading-relaxed mb-6 flex-grow font-light">
+        <p className="text-sm text-gray-400 leading-relaxed mb-6 grow font-light">
           {project.description}
         </p>
 

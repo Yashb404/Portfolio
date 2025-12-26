@@ -1,3 +1,4 @@
+"use client";
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef, useMemo, useCallback } from 'react';
 import './FaultyTerminal.css';
@@ -235,7 +236,7 @@ export default function FaultyTerminal({
   tint = '#ffffff',
   mouseReact = true,
   mouseStrength = 0.2,
-  dpr = Math.min(window.devicePixelRatio || 1, 2),
+  dpr,
   pageLoadAnimation = true,
   brightness = 1,
   className,
@@ -256,6 +257,14 @@ export default function FaultyTerminal({
 
   const ditherValue = useMemo(() => (typeof dither === 'boolean' ? (dither ? 1 : 0) : dither), [dither]);
 
+  const effectiveDpr = useMemo(() => {
+    if (typeof dpr === 'number' && !Number.isNaN(dpr) && dpr > 0) return dpr;
+    if (typeof window !== 'undefined') {
+      return Math.min(window.devicePixelRatio || 1, 2);
+    }
+    return 1;
+  }, [dpr]);
+
   const handleMouseMove = useCallback(e => {
     const ctn = containerRef.current;
     if (!ctn) return;
@@ -269,7 +278,8 @@ export default function FaultyTerminal({
     const ctn = containerRef.current;
     if (!ctn) return;
 
-    const renderer = new Renderer({ dpr });
+    const renderer = new Renderer({ dpr: effectiveDpr });
+    
     rendererRef.current = renderer;
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 1);
@@ -363,19 +373,19 @@ export default function FaultyTerminal({
     rafRef.current = requestAnimationFrame(update);
     ctn.appendChild(gl.canvas);
 
-    if (mouseReact) ctn.addEventListener('mousemove', handleMouseMove);
+    if (mouseReact && typeof window !== 'undefined') window.addEventListener('mousemove', handleMouseMove);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       resizeObserver.disconnect();
-      if (mouseReact) ctn.removeEventListener('mousemove', handleMouseMove);
+      if (mouseReact && typeof window !== 'undefined') window.removeEventListener('mousemove', handleMouseMove);
       if (gl.canvas.parentElement === ctn) ctn.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
       loadAnimationStartRef.current = 0;
       timeOffsetRef.current = Math.random() * 100;
     };
   }, [
-    dpr,
+    effectiveDpr,
     pause,
     timeScale,
     scale,
