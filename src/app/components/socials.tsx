@@ -26,7 +26,7 @@ export const Socials = () => (
             href={social.url}
             target="_blank"
             rel="noreferrer"
-            className="w-16 h-16 border border-border-gray flex items-center justify-center text-gray-400 hover:text-white hover:border-white hover:bg-white hover:text-black transition-all duration-300 transform hover:-translate-y-1"
+            className="w-16 h-16 border border-border-gray flex items-center justify-center text-gray-400 hover:text-white hover:border-white hover:bg-white transition-all duration-300 transform hover:-translate-y-1"
           >
             {social.icon}
           </a>

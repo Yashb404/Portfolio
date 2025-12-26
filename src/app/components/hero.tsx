@@ -27,7 +27,7 @@ export const Hero = () => {
           curvature={0}
           tint="#ffffff"
           mouseReact={true}
-          mouseStrength={0.2}
+          mouseStrength={0.3}
           pageLoadAnimation={false}
           brightness={0.5}
         />
@@ -42,7 +42,7 @@ export const Hero = () => {
           <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter mb-6 fade-in-up delay-100">
              Hey,  <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">
-            I'm Yashaswi
+            I&apos;m Yashaswi
             </span>{" "}
             <br />
             
@@ -52,6 +52,7 @@ export const Hero = () => {
             <p className="text-xl md:text-2xl font-mono text-gray-400 border-l-2 border-white pl-4">
               
               <TypingText
+                as="span"
                 text={["Backend Dev", "Rust & Solana", "Web App Builder"]}
                 typingSpeed={75}
                 pauseDuration={1500}
@@ -60,7 +61,7 @@ export const Hero = () => {
                 
                 className="text-white"
                 textColors={['#ffffff', '#ffffff', '#ffffff']}
-                variableSpeed={{ min: 50, max: 70 }}
+                variableSpeed={{ min: 50, max: 50 }}
               />
             </p>
           </div>

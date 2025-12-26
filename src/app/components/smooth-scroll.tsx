@@ -31,8 +31,13 @@ export const SmoothScroll = () => {
       }
     };
 
-    // Handle initial hash on page load
-    handleHashScroll();
+    // Only handle initial hash on page load if there's actually a hash in the URL
+    // Add a small delay to ensure page is fully rendered
+    const timeoutId = setTimeout(() => {
+      if (window.location.hash) {
+        handleHashScroll();
+      }
+    }, 100);
 
     // Handle hash changes (e.g., when clicking anchor links)
     window.addEventListener("hashchange", handleHashScroll);
@@ -69,6 +74,7 @@ export const SmoothScroll = () => {
     document.addEventListener("click", handleAnchorClick);
 
     return () => {
+      clearTimeout(timeoutId);
       window.removeEventListener("hashchange", handleHashScroll);
       document.removeEventListener("click", handleAnchorClick);
     };

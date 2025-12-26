@@ -34,18 +34,8 @@ export const Projects = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {projectData.map((project, idx) => {
-          const ProjectWrapper = project.link ? 'a' : 'div';
-          const wrapperProps = project.link
-            ? { href: project.link, target: '_blank', rel: 'noreferrer' }
-            : {};
-          
-          return (
-            <ProjectWrapper
-              {...wrapperProps}
-              key={project.title}
-              className="group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up"
-              style={{ animationDelay: `${idx * 100}ms` }}
-            >
+          const content = (
+            <>
               <div className="p-8 relative z-10">
                 <div className="flex justify-between items-start mb-6">
                   <h3 className="text-xl font-bold text-white group-hover:text-black transition-colors">
@@ -74,7 +64,31 @@ export const Projects = () => (
 
               <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-gray-500 opacity-50 group-hover:border-black"></div>
               <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-gray-500 opacity-50 group-hover:border-black"></div>
-            </ProjectWrapper>
+            </>
+          );
+
+          const className = "group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up";
+          const style = { animationDelay: `${idx * 100}ms` };
+
+          return project.link ? (
+            <a
+              key={project.title}
+              href={project.link}
+              target="_blank"
+              rel="noreferrer"
+              className={className}
+              style={style}
+            >
+              {content}
+            </a>
+          ) : (
+            <div
+              key={project.title}
+              className={className}
+              style={style}
+            >
+              {content}
+            </div>
           );
         })}
         

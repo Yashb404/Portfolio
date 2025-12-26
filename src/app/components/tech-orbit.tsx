@@ -129,29 +129,6 @@ const techStack = [
   "Linux",
 ];
 
-// Helper to generate SVG Path components
-const Icon = ({
-  path,
-  color,
-  viewBox,
-}: {
-  path: string;
-  color: string;
-  viewBox?: string;
-}) => (
-  <svg
-    viewBox={viewBox || "0 0 24 24"}
-    fill="none"
-    stroke={color}
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-full h-full"
-  >
-    <path fill={color} stroke="none" d={path} />
-  </svg>
-);
-
 const getTechIcon = (name: string) => {
   const icons: Record<string, string> = {
     Rust: "https://www.vectorlogo.zone/logos/rust-lang/rust-lang-icon.svg",
