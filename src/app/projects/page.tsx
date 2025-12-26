@@ -214,7 +214,7 @@ const ProjectsPage = () => {
           <p className="text-gray-500 font-mono text-sm mb-4">
             INTERESTED IN COLLABORATION?
           </p>
-          <a href="yash404.dev/#socials" className="inline-block border border-white text-white px-8 py-3 hover:bg-white hover:text-black transition-all duration-300 font-mono text-sm font-bold">
+          <a href="/#socials" className="inline-block border border-white text-white px-8 py-3 hover:bg-white hover:text-black transition-all duration-300 font-mono text-sm font-bold">
             INITIATE CONTACT
           </a>
         </motion.div>
