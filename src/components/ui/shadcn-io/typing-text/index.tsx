@@ -85,9 +85,10 @@ const TypingText = ({
   }, [startOnVisible]);
 
   useEffect(() => {
+    let tween: gsap.core.Tween | undefined;
     if (showCursor && cursorRef.current) {
       gsap.set(cursorRef.current, { opacity: 1 });
-      gsap.to(cursorRef.current, {
+      tween = gsap.to(cursorRef.current, {
         opacity: 0,
         duration: cursorBlinkDuration,
         repeat: -1,
@@ -95,6 +96,9 @@ const TypingText = ({
         ease: 'power2.inOut'
       });
     }
+    return () => {
+      if (tween) tween.kill();
+    };
   }, [showCursor, cursorBlinkDuration]);
 
   useEffect(() => {
