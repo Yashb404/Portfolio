@@ -1,9 +1,117 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 
-// --- Data ---
+// --- 1. MATH UTILITIES (Ported from your provided logic) ---
+
+type Vec3 = [number, number, number];
+type Matrix3x3 = [Vec3, Vec3, Vec3];
+
+const MATH = {
+  cos: Math.cos,
+  sin: Math.sin,
+  sqrt: Math.sqrt,
+  pow: Math.pow,
+  PI: Math.PI,
+
+  multVectorWithMatrix: (m: Matrix3x3) => (v: Vec3): Vec3 => {
+    const [x, y, z] = v;
+    const [
+      [M11, M12, M13],
+      [M21, M22, M23],
+      [M31, M32, M33],
+    ] = m;
+    return [
+      M11 * x + M21 * y + M31 * z,
+      M12 * x + M22 * y + M32 * z,
+      M13 * x + M23 * y + M33 * z,
+    ];
+  },
+
+  rotateXM: (a: number): Matrix3x3 => [
+    [1, 0, 0],
+    [0, MATH.cos(a), -MATH.sin(a)],
+    [0, MATH.sin(a), MATH.cos(a)],
+  ],
+
+  rotateYM: (a: number): Matrix3x3 => [
+    [MATH.cos(a), 0, MATH.sin(a)],
+    [0, 1, 0],
+    [-MATH.sin(a), 0, MATH.cos(a)],
+  ],
+
+  rotateZM: (a: number): Matrix3x3 => [
+    [MATH.cos(a), -MATH.sin(a), 0],
+    [MATH.sin(a), MATH.cos(a), 0],
+    [0, 0, 1],
+  ],
+
+  normV: (v: Vec3): Vec3 => {
+    const l = MATH.sqrt(v.reduce((a, c) => MATH.pow(c, 2) + a, 0));
+    if (l === 0) return v.map(() => 0) as Vec3;
+    return v.map((c) => c / l) as Vec3;
+  },
+
+  subV: (v1: Vec3) => (v2: Vec3): Vec3 => {
+    return v1.map((c1, i) => c1 - v2[i]) as Vec3;
+  },
+
+  // Rotate around an arbitrary vector [x,y,z] by angle theta
+  rotateVM: (theta: number) => ([ux, uy, uz]: Vec3): Matrix3x3 => {
+    const c = MATH.cos(theta);
+    const s = MATH.sin(theta);
+    return [
+      [
+        c + ux * ux * (1 - c),
+        ux * uy * (1 - c) - uz * s,
+        ux * uz * (1 - c) + uy * s,
+      ],
+      [
+        uy * ux * (1 - c) + uz * s,
+        c + uy * uy * (1 - c),
+        uy * uz * (1 - c) - ux * s,
+      ],
+      [
+        uz * ux * (1 - c) - uy * s,
+        uz * uy * (1 - c) + ux * s,
+        c + uz * uz * (1 - c),
+      ],
+    ];
+  },
+
+  multM: (a: Matrix3x3, b: Matrix3x3): Matrix3x3 => {
+    const [
+      [a11, a12, a13],
+      [a21, a22, a23],
+      [a31, a32, a33],
+    ] = a;
+    const [
+      [b11, b12, b13],
+      [b21, b22, b23],
+      [b31, b32, b33],
+    ] = b;
+    return [
+      [
+        a11 * b11 + a12 * b21 + a13 * b31,
+        a11 * b12 + a12 * b22 + a13 * b32,
+        a11 * b13 + a12 * b23 + a13 * b33,
+      ],
+      [
+        a21 * b11 + a22 * b21 + a23 * b31,
+        a21 * b12 + a22 * b22 + a23 * b32,
+        a21 * b13 + a22 * b23 + a23 * b33,
+      ],
+      [
+        a31 * b11 + a32 * b21 + a33 * b31,
+        a31 * b12 + a32 * b22 + a33 * b32,
+        a31 * b13 + a32 * b23 + a33 * b33,
+      ],
+    ];
+  },
+};
+
+// --- 2. ICONS & DATA ---
+
 const techStack = [
   "Rust",
   "Solana",
@@ -21,189 +129,188 @@ const techStack = [
   "Linux",
 ];
 
-// --- Helper: Fibonacci Sphere Algorithm ---
-const calculateSpherePosition = (
-  index: number,
-  total: number,
-  radius: number
-) => {
-  const phi = Math.acos(-1 + (2 * index) / total);
-  const theta = Math.sqrt(total * Math.PI) * phi;
+// Helper to generate SVG Path components
+const Icon = ({
+  path,
+  color,
+  viewBox,
+}: {
+  path: string;
+  color: string;
+  viewBox?: string;
+}) => (
+  <svg
+    viewBox={viewBox || "0 0 24 24"}
+    fill="none"
+    stroke={color}
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="w-full h-full"
+  >
+    <path fill={color} stroke="none" d={path} />
+  </svg>
+);
 
-  return {
-    x: radius * Math.cos(theta) * Math.sin(phi),
-    y: radius * Math.sin(phi),
-    z: radius * Math.cos(phi),
+const getTechIcon = (name: string) => {
+  const icons: Record<string, string> = {
+    Rust: "https://www.vectorlogo.zone/logos/rust-lang/rust-lang-icon.svg",
+    Solana:
+      "https://github.com/user-attachments/assets/57b129b9-4790-4075-bf1f-ebb514885f43",
+    Anchor:
+      "https://camo.githubusercontent.com/590ccfb4e70a27673047ee879ed409981c05b2da403e60b4aaa7961ccdb46001/68747470733a2f2f7062732e7477696d672e636f6d2f6d656469612f46565556614f3958454141756c764b3f666f726d61743d706e67266e616d653d736d616c6c",
+    "Next.js":
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg",
+    TypeScript:
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+    React:
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+    PostgreSQL:
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+    MongoDB:
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",
+    MySQL:
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
+    Java:
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
+    Postman:
+      "https://www.svgrepo.com/show/354202/postman-icon.svg",
+    Docker:
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",
+    Git: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
+    Linux:
+      "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg",
   };
+
+  const src = icons[name];
+  if (!src) return null;
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={name}
+      width={48}
+      height={48}
+      className="w-full h-full object-contain"
+      loading="lazy"
+    />
+  );
 };
+
+// --- 3. COMPONENT ---
 
 export const TechOrbit = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const rafRef = useRef<number | null>(null);
 
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [tags, setTags] = useState<
-    {
-      id: number;
-      text: string;
-      x: number;
-      y: number;
-      z: number;
-      scale: number;
-      opacity: number;
-    }[]
-  >([]);
+  // State for physics
+  const [matrix, setMatrix] = useState<Matrix3x3>([
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1],
+  ]);
 
-  const velocity = useRef({ x: 0, y: -0.0001 });
+  // Spin state
+  const spinAxis = useRef<Vec3>([1, 0, 0]); // Axis of rotation
+  const spinSpeed = useRef(0.0005); // Speed of rotation
   const isDragging = useRef(false);
-  const lastMouse = useRef({ x: 0, y: 0 });
-  const animationRef = useRef<number | null>(null);
+  const lastPos = useRef({ x: 0, y: 0 });
+  const lastTime = useRef(0);
 
-  const radius = 200;
-
-  useEffect(() => {
-    const initialTags = techStack.map((text, i) => {
-      const pos = calculateSpherePosition(i, techStack.length, radius);
-      return {
-        id: i,
-        text,
-        ...pos,
-        scale: 1,
-        opacity: 1,
-      };
+  // Calculate initial points (Fibonacci Sphere)
+  const points = useMemo(() => {
+    const count = techStack.length;
+    const radius = 180;
+    return techStack.map((tech, i) => {
+      const phi = Math.acos(-1 + (2 * i) / count);
+      const theta = Math.sqrt(count * Math.PI) * phi;
+      const x = radius * Math.cos(theta) * Math.sin(phi);
+      const y = radius * Math.sin(theta) * Math.sin(phi);
+      const z = radius * Math.cos(phi);
+      return { id: i, tech, x, y, z };
     });
-    setTags(initialTags);
   }, []);
 
+  // Animation Loop
   useEffect(() => {
-    const animate = () => {
-      if (!isDragging.current) {
-        // Stronger friction to slow down faster
-        velocity.current.x *= 0.98;
-        velocity.current.y *= 0.98;
+    const animate = (time: number) => {
+      // Delta time for smooth animation
+      const delta = time - lastTime.current;
+      lastTime.current = time;
 
-        // Much slower base rotation
-        const baseRotation = -0.00005;
-        velocity.current.y += (baseRotation - velocity.current.y) * 0.01;
-      }
+      // Determine Rotation Matrix for this frame
+      let rotationMatrix: Matrix3x3 = [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1],
+      ];
 
-      setRotation((prev) => ({
-        x: prev.x + velocity.current.x,
-        y: prev.y + velocity.current.y,
-      }));
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (animationRef.current !== null) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
-
-  // Calculate connections between nearby tags
-  type TagType = {
-    id: number;
-    text: string;
-    x: number;
-    y: number;
-    z: number;
-    scale: number;
-    opacity: number;
-  };
-
-  const [connections, setConnections] = useState<
-    Array<{ from: number; to: number; distance: number }>
-  >([]);
-
-  // Calculate connections between nearby tags
-  const calculateConnections = (tags: TagType[], connectionRadius: number) => {
-    const connections: Array<{ from: number; to: number; distance: number }> = [];
-    const maxConnectionDistance = connectionRadius * 1.5; // Connect tags within this distance
-
-    for (let i = 0; i < tags.length; i++) {
-      for (let j = i + 1; j < tags.length; j++) {
-        const dx = tags[i].x - tags[j].x;
-        const dy = tags[i].y - tags[j].y;
-        const dz = tags[i].z - tags[j].z;
-        const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-        if (distance < maxConnectionDistance) {
-          connections.push({ from: i, to: j, distance });
+      if (isDragging.current) {
+        // While dragging, we don't auto spin.
+        // However, the drag logic usually happens in mouse move, not here.
+        // If we wanted momentum, we'd add it here.
+      } else {
+        // Idle rotation: Rotate around the current spinAxis
+        if (spinSpeed.current !== 0) {
+          rotationMatrix = MATH.rotateVM(spinSpeed.current * (delta || 16))(
+            spinAxis.current
+          );
+          // Apply friction
+          spinSpeed.current *= 0.98;
+          // Maintain a minimum "soft" rotation
+          if (Math.abs(spinSpeed.current) < 0.0005) {
+            spinSpeed.current = spinSpeed.current > 0 ? 0.0005 : -0.0005;
+          }
         }
       }
-    }
 
-    return connections;
-  };
+      // Update accumulated matrix
+      setMatrix((prev) => MATH.multM(rotationMatrix, prev));
 
-  useEffect(() => {
-    const initialTags = techStack.map((text, i) => {
-      const pos = calculateSpherePosition(i, techStack.length, radius);
-      return {
-        id: i,
-        text,
-        ...pos,
-        scale: 1,
-        opacity: 1,
-      };
-    });
-    setTags(initialTags);
-    setConnections(calculateConnections(initialTags, radius));
-  }, [radius]);
+      rafRef.current = requestAnimationFrame(animate);
+    };
 
-  useEffect(() => {
-    const cx = Math.cos(rotation.x);
-    const sx = Math.sin(rotation.x);
-    const cy = Math.cos(rotation.y);
-    const sy = Math.sin(rotation.y);
+    rafRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
-    setTags((prevTags) => {
-      const rotatedTags = prevTags.map((tag) => {
-        let x = tag.x * cy - tag.z * sy;
-        let z = tag.z * cy + tag.x * sy;
-        let y = tag.y * cx - z * sx;
-        z = z * cx + tag.y * sx;
-
-        const scale = (z + radius * 2) / (radius * 3);
-        const opacity = (z + radius) / (radius * 2);
-
-        return {
-          ...tag,
-          x,
-          y,
-          z,
-          scale: Math.max(0.5, scale),
-          opacity: Math.max(0.1, opacity),
-        };
-      });
-
-      // Update connections based on rotated positions
-      setConnections(calculateConnections(rotatedTags, radius));
-      return rotatedTags;
-    });
-  }, [rotation, radius]);
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Drag Logic
+  const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
-    lastMouse.current = { x: e.clientX, y: e.clientY };
-    velocity.current = { x: 0, y: 0 };
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    spinSpeed.current = 0; // Stop auto-spin when grabbed
   };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging.current) return;
 
-      const deltaX = e.clientX - lastMouse.current.x;
-      const deltaY = e.clientY - lastMouse.current.y;
-      // Reduced sensitivity for smoother, slower dragging
-      const sensitivity = 0.00005;
+      const deltaX = e.clientX - lastPos.current.x;
+      const deltaY = e.clientY - lastPos.current.y;
 
-      velocity.current.x = deltaY * sensitivity;
-      velocity.current.y = deltaX * sensitivity;
+      // Sensitivity
+      const theta = Math.sqrt(deltaX * deltaX + deltaY * deltaY) * 0.005;
 
-      lastMouse.current = { x: e.clientX, y: e.clientY };
+      if (theta < 0.001) return; // Ignore tiny movements
+
+      // The axis of rotation is perpendicular to the drag vector
+      // Drag vector [deltaX, deltaY]. Normal vector in 3D is roughly [-deltaY, deltaX, 0]
+      const axis = MATH.normV([-deltaY, deltaX, 0] as Vec3);
+
+      // Apply rotation for this specific drag frame
+      const dragMatrix = MATH.rotateVM(theta)(axis);
+
+      // Update global matrix
+      setMatrix((prev) => MATH.multM(dragMatrix, prev));
+
+      // Update spin state for inertia (so it keeps spinning in this direction)
+      spinAxis.current = axis;
+      spinSpeed.current = theta * 2; // Add some boost
+
+      lastPos.current = { x: e.clientX, y: e.clientY };
     };
 
     const handleMouseUp = () => {
@@ -212,130 +319,76 @@ export const TechOrbit = () => {
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
-
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
 
+  // Project 3D points to 2D
+  const renderedPoints = useMemo(() => {
+    const result = points.map((p) => {
+      // 1. Rotate point
+      const rotated = MATH.multVectorWithMatrix(matrix)([p.x, p.y, p.z]);
+
+      // 2. Project to 2D
+      // Scale factor based on Z.
+      // In provided code: scale = (20 - zs * 8) * ...
+      // Here zs is rotated[2].
+      // Normalized z is roughly -180 to 180.
+
+      const zNorm = rotated[2] / 180; // -1 to 1 approx
+      const scale = 1.2 - zNorm * 0.5; // Front is big, back is small
+
+      const opacity =
+        rotated[2] < 0 ? 1 : (1.2 - zNorm) / 2; // Front opaque, back transparent
+
+      return {
+        ...p,
+        rx: rotated[0],
+        ry: rotated[1],
+        rz: rotated[2],
+        scale: Math.max(0.3, scale),
+        opacity: Math.max(0.1, Math.min(1, opacity)),
+      };
+    });
+
+    // Sort by Z (depth) so front items render on top
+    return result.sort((a, b) => a.rz - b.rz);
+  }, [points, matrix]);
+
   return (
     <div
       ref={containerRef}
-      className="flex items-center justify-center w-full h-[500px] relative select-none touch-none"
+      className="w-full h-[500px] relative flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
       onMouseDown={handleMouseDown}
     >
-      <div className="absolute z-20 text-[10px] md:text-xs font-mono text-gray-600 tracking-widest uppercase opacity-50 pointer-events-none">
-        System Core
-      </div>
-
-      <div
-        className={`absolute top-0 left-0 w-full h-full ${
-          isDragging.current ? "cursor-grabbing" : "cursor-grab"
-        }`}
-      >
-        {/* SVG for curved connection lines */}
-        <svg
-          className="absolute top-0 left-0 w-full h-full pointer-events-none"
-          style={{ zIndex: 1 }}
-        >
-          {connections.map((conn, idx) => {
-            const fromTag = tags[conn.from];
-            const toTag = tags[conn.to];
-
-            if (!fromTag || !toTag) return null;
-
-            // Calculate center point for the curve
-            const centerX = (fromTag.x + toTag.x) / 2;
-            const centerY = (fromTag.y + toTag.y) / 2;
-            const centerZ = (fromTag.z + toTag.z) / 2;
-
-            // Calculate opacity based on average depth
-            const avgOpacity = (fromTag.opacity + toTag.opacity) / 2;
-            const lineOpacity = Math.max(0.05, avgOpacity * 0.3);
-
-            // Calculate distance for line thickness
-            const normalizedDistance = 1 - conn.distance / (radius * 1.5);
-            const lineWidth = Math.max(0.5, normalizedDistance * 1.5);
-
-            // Get screen coordinates (center of container)
-            const centerXScreen = 0; // Already centered
-            const centerYScreen = 0; // Already centered
-
-            const x1 = centerXScreen + fromTag.x;
-            const y1 = centerYScreen + fromTag.y;
-            const x2 = centerXScreen + toTag.x;
-            const y2 = centerYScreen + toTag.y;
-
-            // Control point for quadratic curve (offset perpendicular to line)
-            const dx = x2 - x1;
-            const dy = y2 - y1;
-            const perpX = -dy;
-            const perpY = dx;
-            const perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
-            const normalizedPerpX = perpLength > 0 ? (perpX / perpLength) * 30 : 0;
-            const normalizedPerpY = perpLength > 0 ? (perpY / perpLength) * 30 : 0;
-
-            const controlX = (x1 + x2) / 2 + normalizedPerpX;
-            const controlY = (y1 + y2) / 2 + normalizedPerpY;
-
-            return (
-              <motion.path
-                key={`${conn.from}-${conn.to}-${idx}`}
-                d={`M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}`}
-                fill="none"
-                stroke="rgba(255, 255, 255, 0.2)"
-                strokeWidth={lineWidth}
-                opacity={lineOpacity}
-                style={{
-                  zIndex: Math.round(Math.min(fromTag.z, toTag.z) + radius),
-                }}
-                transition={{ duration: 0.1 }}
-              />
-            );
-          })}
-        </svg>
-
-        {tags.map((tag) => (
-          <motion.div
-            key={tag.id}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      <div className="relative w-full h-full">
+        {renderedPoints.map((p) => (
+          <div
+            key={p.id}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center transition-all duration-75 ease-linear will-change-transform"
             style={{
-              x: tag.x,
-              y: tag.y,
-              scale: tag.scale,
-              opacity: tag.opacity,
-              zIndex: Math.round(tag.z + radius),
+              transform: `translate3d(${p.rx}px, ${p.ry}px, 0) scale(${p.scale})`,
+              opacity: p.opacity,
+              zIndex: Math.round(p.rz + 200),
+              width: "60px", // Base container size
+              height: "60px",
             }}
-            whileHover={{
-              backgroundColor: "white",
-              color: "black",
-              scale: tag.scale * 1.2,
-            }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
           >
-            <div
-              className={`
-                px-3 py-1 md:px-4 md:py-2 border border-white/30 rounded-full 
-                font-mono text-xs md:text-sm font-bold tracking-tighter
-                bg-black/50 backdrop-blur-sm whitespace-nowrap
-                hover:border-white hover:shadow-[0_0_20px_rgba(255,255,255,0.5)]
-              `}
-              style={{
-                color: tag.opacity > 0.6 ? "white" : "#555",
-                borderColor:
-                  tag.opacity > 0.6
-                    ? "rgba(255,255,255,0.5)"
-                    : "rgba(255,255,255,0.1)",
-              }}
-            >
-              {tag.text}
+            {/* Icon */}
+            <div className="w-10 h-10 md:w-12 md:h-12 drop-shadow-2xl">
+              {getTechIcon(p.tech)}
             </div>
-          </motion.div>
+            {/* Label - only show if front-facing */}
+            {p.opacity > 0.6 && (
+              <span className="text-[10px] text-white font-mono mt-1 bg-black/50 px-1 rounded backdrop-blur-sm">
+                {p.tech}
+              </span>
+            )}
+          </div>
         ))}
       </div>
     </div>
   );
 };
-
-

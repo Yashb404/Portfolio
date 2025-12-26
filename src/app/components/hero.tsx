@@ -5,7 +5,7 @@ import { useTypewriter } from "../hooks/useTypewriter";
 import { IconArrowRight } from "./icons";
 
 export const Hero = () => {
-  const role1 = useTypewriter("Rust Developer", 100);
+  const role1 = useTypewriter("Rust & Web3 Developer", 100);
 
   return (
     <section className="min-h-screen flex flex-col justify-center items-center px-6 pt-24 relative overflow-hidden">
@@ -15,12 +15,12 @@ export const Hero = () => {
         </div>
 
         <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter mb-6 fade-in-up delay-100">
-          BUILDING THE <br />
+           Placeholder<br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">
-            DECENTRALIZED
+          Placeholder
           </span>{" "}
           <br />
-          FUTURE.
+          Placeholder
         </h1>
 
         <div className="h-24 md:h-12 flex items-center justify-center md:justify-start">
