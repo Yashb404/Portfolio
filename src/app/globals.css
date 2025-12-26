@@ -53,6 +53,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 64px; /* Height of your fixed navbar */
   max-width: 100%;
   overflow-x: hidden;
 }

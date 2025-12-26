@@ -183,6 +183,7 @@ export const TechOrbit = () => {
   const isDragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
   const lastTime = useRef(0);
+  const [isMounted, setIsMounted] = useState(false);
 
   const points = useMemo(() => {
     const count = techStack.length;
@@ -198,6 +199,7 @@ export const TechOrbit = () => {
   }, []);
 
   useEffect(() => {
+    setIsMounted(true);
     const animate = (time: number) => {
       const delta = time - lastTime.current;
       lastTime.current = time;
@@ -321,7 +323,7 @@ export const TechOrbit = () => {
       onTouchStart={handleTouchStart}
     >
       <div className="relative w-full h-full">
-        {renderedPoints.map((p) => (
+        {isMounted && renderedPoints.map((p) => (
           <div
             key={p.id}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center transition-all duration-75 ease-linear will-change-transform"

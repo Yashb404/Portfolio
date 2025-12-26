@@ -7,14 +7,19 @@ import { Hero } from "./components/hero";
 import { Navbar } from "./components/navbar";
 import { Projects } from "./components/projects";
 import { Socials } from "./components/socials";
-import { SmoothScroll } from "./components/smooth-scroll";
 
 export default function Home() {
   return (
     <div className="font-sans antialiased selection:bg-white selection:text-black">
-      <SmoothScroll />
       <div className="noise-overlay" aria-hidden />
       <Navbar />
+
+      <div className="fixed top-20 left-6 z-40 pointer-events-none md:hidden">
+        <p className="text-[10px] font-mono text-gray-500">
+          (all effects may not be visible on smaller devices)
+        </p>
+      </div>
+
       <main>
         <Hero />
         <About />
