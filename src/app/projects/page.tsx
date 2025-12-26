@@ -17,20 +17,14 @@ const IconLock = ({ className }: { className?: string }) => (
 
 // --- Data ---
 const projects = [
-  {
-    title: "BoliBazaar",
-    subtitle: "Full-Stack Reverse-Auction Platform",
-    description: "A platform enabling collective bargaining and bulk purchasing for vendors. Implemented role-based onboarding with 3 distinct user roles using Next.js middleware. Integrated vendor geo-location with Leaflet.js and designed a secure dashboard with JWT authentication.",
-    tech: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Clerk", "Leaflet"],
-    imageSeed: "boli", // Seed for placeholder image
-    link: null, // No link provided
-  },
+  
   {
     title: "Decentralized Music Player",
     subtitle: "Solana + Anchor Framework",
     description: "Developed a Solana program using Anchor for managing on-chain playlists and user profiles. Created a playlist system supporting up to 50 tracks per playlist, linking metadata to decentralized storage via IPFS. Integrated Solana Web3.js for real-time interactions.",
     tech: ["React", "TypeScript", "Solana", "Rust", "IPFS", "Anchor"],
     imageSeed: "music",
+    image: "/projects/Decentralized-music-player.png",
     link: "https://github.com/Yashb404/SolanaMusicPlayer",
   },
   {
@@ -39,16 +33,46 @@ const projects = [
     description: "Designed and deployed a backend with 15+ API endpoints covering authentication, uploads, and playlist management. Integrated Cloudinary for scalable media storage and implemented likes, dislikes, and subscription features with modular architecture.",
     tech: ["Node.js", "Express.js", "MongoDB", "JWT", "Cloudinary"],
     imageSeed: "youtube",
+    image: "/projects/YT-API.png",
     link: "https://github.com/YashB404/Youtube-clone-Backend-project",
   },
   {
-    title: "Adversarial ML Research",
-    subtitle: "Academic Research Paper",
+    title: "Adversarial ML Paper",
+    subtitle: "Academic Paper",
     description: "A comprehensive review of evasion attacks, defense mechanisms, and evaluation frameworks in cybersecurity. Compared multiple evasion techniques with applications in malware detection and IoT security. Submitted to the International Journal of Communication Systems.",
     tech: ["Python", "Machine Learning", "Cybersecurity"],
     imageSeed: "research",
+     image: "/projects/Review_Paper_Censored.png",
     link: null,
   },
+  {
+    title: "BoliBazaar",
+    subtitle: "Full-Stack Reverse-Auction Platform",
+    description: "A platform enabling collective bargaining and bulk purchasing for vendors. Implemented role-based onboarding with 3 distinct user roles using Next.js middleware. Integrated vendor geo-location with Leaflet.js and designed a secure dashboard with JWT authentication.",
+    tech: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Clerk", "Leaflet"],
+    imageSeed: "boli",
+     image: "/projects/Boli-Bazaar.png", 
+    link: null, 
+  },
+  {
+    title: "Ackee Blockchain School of Solana",
+    subtitle: "Solana Bootcamp",
+    description: "I had been learning rust for a month when I saw ackee school of solana on twitter and decided to join in , best decision. There structured course with assignments that held you accountable taught me a lot more than I may have learned on my own. I ended it with my first complete web3 project ",
+    tech: ["Solana", "Anchor", "Rust", "TypeScript", "React","Fuzzing","Cybersecurity"],
+    imageSeed: "solana",
+    image: "/projects/School-of-Solana.png",
+    link: null,
+  }
+  ,
+  {
+    title: "Solana Developer Bootcamp 2024",
+    subtitle: "Solana Bootcamp",
+    description: "I learned from the solana bootcamp on youtube ,it was my first foray into web3 development",
+    tech: ["Solana", "Anchor", "Rust", "TypeScript", "React"],
+    imageSeed: "solana",
+    image: "/projects/solana-bootcamp.png",
+    link: null,
+  }
 ];
 
 // --- Sub-Components ---
@@ -69,10 +93,10 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
       className="group relative flex flex-col bg-terminal-gray border border-border-gray hover:border-white transition-colors duration-300 overflow-hidden"
     >
       {/* Image Section */}
-      <div className="relative h-48 w-full overflow-hidden bg-black">
-        {/* Placeholder Image with Grayscale Filter */}
+      <div className="relative h-72 w-full overflow-hidden bg-black">
+        {/* Project Image with Grayscale Filter - Use project.image if available, otherwise placeholder */}
         <img 
-          src={`https://placehold.co/600x400/111/FFF?text=${project.title.replace(/\s/g, '+')}`}
+          src={project.image || `https://placehold.co/600x400/111/FFF?text=${project.title.replace(/\s/g, '+')}`}
           alt={project.title}
           className="w-full h-full object-cover opacity-60 grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-40"
         />
@@ -176,7 +200,7 @@ const ProjectsPage = () => {
         <p className="text-gray-500 font-mono text-sm mb-4">
           INTERESTED IN COLLABORATION?
         </p>
-        <a href="mailto:yashbhardwaj7890@gmail.com" className="inline-block border border-white text-white px-8 py-3 hover:bg-white hover:text-black transition-all duration-300 font-mono text-sm font-bold">
+        <a href="http://localhost:3000/#socials" className="inline-block border border-white text-white px-8 py-3 hover:bg-white hover:text-black transition-all duration-300 font-mono text-sm font-bold">
           INITIATE CONTACT
         </a>
       </motion.div>

@@ -8,7 +8,7 @@ import TypingText from "../../components/ui/shadcn-io/typing-text/index";
 export const Hero = () => {
 
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center px-6 pt-24 relative overflow-hidden">
+    <section id="hero" className="min-h-screen flex flex-col justify-center items-center px-6 pt-24 relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
         <FaultyTerminal
           className="absolute inset-0 -z-10"

@@ -10,7 +10,7 @@ export const Navbar = () => (
       </a>
       <div className="hidden md:flex space-x-8 text-sm font-mono text-gray-400">
         <a href="#about" className="hover:text-white transition-colors">
-          01. ABOUT
+          01. SKILLS
         </a>
         <a href="/projects" className="hover:text-white transition-colors">
           02. PROJECTS
