@@ -53,10 +53,13 @@
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  max-width: 100%;
   overflow-x: hidden;
 }
 
