@@ -98,7 +98,7 @@ export const Projects = () => (
           className="group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up"
           style={{ animationDelay: '300ms' }}
         >
-          <div className="p-8 relative z-10 flex flex-col items-center justify-center h-full min-h-[300px]">
+          <div className="p-8 relative z-10 flex flex-col items-center justify-center h-full min-h-75">
             <div className="flex flex-col items-center gap-4">
               <h3 className="text-xl font-bold text-white group-hover:text-black transition-colors text-center">
                 View All Projects

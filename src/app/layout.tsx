@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yashaswi Bhardwaj - Rust & Web3 Developer",
-  description: "B.Tech CSE Student | Tech Lead at GDG | Rust, Solana Blockchain & Backend Development",
+  title: "YashB404",
+  description: "Rust, Solana Blockchain & Backend Development",
 };
 
 export default function RootLayout({
