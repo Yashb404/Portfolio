@@ -5,28 +5,22 @@ import { IconArrowRight } from "./icons";
 
 const projectData = [
   {
-    title: "Solana DEX Aggregator",
-    tech: ["Rust", "Solana", "Anchor"],
-    desc: "A high-performance aggregator routing swaps across multiple AMMs on Solana. Optimized for minimal slippage and latency.",
-    link: "#",
+    title: "Decentralized Music Player (Solana + Anchor)",
+    tech: ["React/TypeScript", "Solana Blockchain", "Anchor Framework", "Rust", "IPFS (Pinata)"],
+    desc: "Developed Solana program with Anchor for managing on-chain playlists, tracks, and user profiles. Created a playlist system supporting up to 50 tracks per playlist, linking metadata to decentralized storage via IPFS. Integrated Solana Web3.js to handle client-side program interactions in real-time.",
+    link: "https://github.com/Yashb404/SolanaMusicPlayer",
   },
   {
-    title: "Rust Actix Microservice",
-    tech: ["Rust", "Actix-web", "PostgreSQL"],
-    desc: "Core authentication service handling 10k+ RPS. Implements JWT auth, rate limiting, and connection pooling.",
-    link: "#",
+    title: "YouTube Clone – Backend API",
+    tech: ["Node.js", "Express.js", "MongoDB", "JWT", "Cloudinary"],
+    desc: "Designed and deployed a RESTful backend with 15+ API endpoints covering authentication, uploads, and playlist management. Integrated Cloudinary for scalable media storage; implemented likes, dislikes, and subscription features. Applied modular architecture and error handling practices for maintainability.",
+    link: "https://github.com/YashB404/Youtube-clone-Backend-project",
   },
   {
-    title: "NFT Metadata Parser",
-    tech: ["Rust", "Web3", "Async"],
-    desc: "An indexer tool that crawls the Solana network to parse and update off-chain metadata for large NFT collections.",
-    link: "#",
-  },
-  {
-    title: "Token Vesting Program",
-    tech: ["Rust", "Solana", "PDAs"],
-    desc: "Smart contract implementing a cliff and linear vesting schedule for team tokens using Program Derived Addresses.",
-    link: "#",
+    title: "BoliBazaar – Full-Stack Reverse-Auction Platform",
+    tech: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Clerk", "Tailwind CSS"],
+    desc: "Built a full-stack platform for reverse auctions enabling collective bargaining. Implemented role-based onboarding with 3 distinct user roles using Next.js middleware and integrated vendor geo-location with Leaflet.js. Designed a secure vendor dashboard with transactional API endpoints, order tracking, and JWT-based authentication.",
+    link: null,
   },
 ];
 
@@ -39,41 +33,50 @@ export const Projects = () => (
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {projectData.map((project, idx) => (
-          <a
-            href={project.link}
-            key={project.title}
-            className="group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up"
-            style={{ animationDelay: `${idx * 100}ms` }}
-          >
-            <div className="p-8 relative z-10">
-              <div className="flex justify-between items-start mb-6">
-                <h3 className="text-xl font-bold text-white group-hover:text-black transition-colors">
-                  {project.title}
-                </h3>
-                <IconArrowRight className="w-5 h-5 text-gray-500 group-hover:text-black group-hover:translate-x-1 transition-all" />
+        {projectData.map((project, idx) => {
+          const ProjectWrapper = project.link ? 'a' : 'div';
+          const wrapperProps = project.link
+            ? { href: project.link, target: '_blank', rel: 'noreferrer' }
+            : {};
+          
+          return (
+            <ProjectWrapper
+              {...wrapperProps}
+              key={project.title}
+              className="group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up"
+              style={{ animationDelay: `${idx * 100}ms` }}
+            >
+              <div className="p-8 relative z-10">
+                <div className="flex justify-between items-start mb-6">
+                  <h3 className="text-xl font-bold text-white group-hover:text-black transition-colors">
+                    {project.title}
+                  </h3>
+                  {project.link && (
+                    <IconArrowRight className="w-5 h-5 text-gray-500 group-hover:text-black group-hover:translate-x-1 transition-all" />
+                  )}
+                </div>
+
+                <p className="font-mono text-gray-400 text-sm mb-6">
+                  {project.desc}
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  {project.tech.map((t) => (
+                    <span
+                      key={t}
+                      className="text-xs font-mono border border-gray-600 px-2 py-1 rounded group-hover:border-black group-hover:text-black transition-colors text-gray-300"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <p className="font-mono text-gray-400 text-sm mb-6 h-20">
-                {project.desc}
-              </p>
-
-              <div className="flex flex-wrap gap-2">
-                {project.tech.map((t) => (
-                  <span
-                    key={t}
-                    className="text-xs font-mono border border-gray-600 px-2 py-1 rounded group-hover:border-black group-hover:text-black transition-colors text-gray-300"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-gray-500 opacity-50 group-hover:border-black"></div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-gray-500 opacity-50 group-hover:border-black"></div>
-          </a>
-        ))}
+              <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-gray-500 opacity-50 group-hover:border-black"></div>
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-gray-500 opacity-50 group-hover:border-black"></div>
+            </ProjectWrapper>
+          );
+        })}
       </div>
     </div>
   </section>
