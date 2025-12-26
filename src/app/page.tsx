@@ -15,9 +15,7 @@ export default function Home() {
       <Navbar />
 
       <div className="fixed top-20 left-6 z-40 pointer-events-none md:hidden">
-        <p className="text-[10px] font-mono text-gray-500">
-          (all effects may not be visible on smaller devices)
-        </p>
+        
       </div>
 
       <main>
