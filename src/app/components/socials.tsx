@@ -34,7 +34,7 @@ export const Socials = () => (
       </div>
 
       <div className="mt-20 font-mono text-xs text-gray-600">
-        <p>© 2024 YASHASWI BHARDWAJ.</p>
+        <p>© 2025 YASHASWI BHARDWAJ.</p>
         <p>BUILT WITH REACT, TYPESCRIPT & SHADCN.</p>
       </div>
     </div>

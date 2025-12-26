@@ -265,14 +265,30 @@ export default function FaultyTerminal({
     return 1;
   }, [dpr]);
 
-  const handleMouseMove = useCallback(e => {
+  const updateMouseFromClient = useCallback(clientPos => {
     const ctn = containerRef.current;
     if (!ctn) return;
     const rect = ctn.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = 1 - (e.clientY - rect.top) / rect.height;
+    const x = (clientPos.x - rect.left) / rect.width;
+    const y = 1 - (clientPos.y - rect.top) / rect.height;
     mouseRef.current = { x, y };
   }, []);
+
+  const handleMouseMove = useCallback(
+    e => {
+      updateMouseFromClient({ x: e.clientX, y: e.clientY });
+    },
+    [updateMouseFromClient]
+  );
+
+  const handleTouchMove = useCallback(
+    e => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      updateMouseFromClient({ x: touch.clientX, y: touch.clientY });
+    },
+    [updateMouseFromClient]
+  );
 
   useEffect(() => {
     const ctn = containerRef.current;
@@ -373,12 +389,18 @@ export default function FaultyTerminal({
     rafRef.current = requestAnimationFrame(update);
     ctn.appendChild(gl.canvas);
 
-    if (mouseReact && typeof window !== 'undefined') window.addEventListener('mousemove', handleMouseMove);
+    if (mouseReact && typeof window !== 'undefined') {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    }
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       resizeObserver.disconnect();
-      if (mouseReact && typeof window !== 'undefined') window.removeEventListener('mousemove', handleMouseMove);
+      if (mouseReact && typeof window !== 'undefined') {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('touchmove', handleTouchMove);
+      }
       if (gl.canvas.parentElement === ctn) ctn.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
       loadAnimationStartRef.current = 0;
@@ -403,7 +425,8 @@ export default function FaultyTerminal({
     mouseStrength,
     pageLoadAnimation,
     brightness,
-    handleMouseMove
+    handleMouseMove,
+    handleTouchMove
   ]);
 
   return <div ref={containerRef} className={`faulty-terminal-container ${className}`} style={style} {...rest} />;
