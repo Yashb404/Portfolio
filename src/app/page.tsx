@@ -2,7 +2,7 @@
 
 import React from "react";
 import { About } from "./components/about";
-import { BlockchainNetwork } from "./components/blockchain-network";
+
 import { Hero } from "./components/hero";
 import { Navbar } from "./components/navbar";
 import { Projects } from "./components/projects";
@@ -13,7 +13,6 @@ export default function Home() {
   return (
     <div className="font-sans antialiased selection:bg-white selection:text-black">
       <SmoothScroll />
-      <BlockchainNetwork />
       <div className="noise-overlay" aria-hidden />
       <Navbar />
       <main>
