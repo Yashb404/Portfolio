@@ -162,15 +162,15 @@ const getTechIcon = (name: string) => {
   const src = icons[name];
   if (!src) return null;
 
+  // Invert colors only for Rust
+  const isRust = name === "Rust";
+
   return (
-    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={name}
-      width={48}
-      height={48}
       className="w-full h-full object-contain"
-      loading="lazy"
+      style={{ filter: isRust ? "invert(1)" : "none" }}
     />
   );
 };
