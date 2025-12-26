@@ -13,11 +13,10 @@ export const Socials = () => (
   <section id="socials" className="py-32 px-6 bg-void relative border-t border-border-gray">
     <div className="max-w-4xl mx-auto text-center">
       <h2 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight">
-        03. LET'S CONNECT
+        03. MY SOCIALS
       </h2>
       <p className="font-mono text-gray-400 mb-12">
-        Interested in building high-performance decentralized systems? <br className="hidden md:block" />
-        Reach out for collaborations or just a friendly chat about Rust & Web3.
+          Reach out for collaborations or just a friendly chat.
       </p>
 
       <div className="flex justify-center gap-6">

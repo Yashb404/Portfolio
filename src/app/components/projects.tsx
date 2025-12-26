@@ -77,6 +77,28 @@ export const Projects = () => (
             </ProjectWrapper>
           );
         })}
+        
+        {/* 4th Card - View All Projects */}
+        <a
+          href="/projects"
+          className="group relative border border-border-gray bg-terminal-gray hover:bg-white transition-all duration-300 overflow-hidden block fade-in-up"
+          style={{ animationDelay: '300ms' }}
+        >
+          <div className="p-8 relative z-10 flex flex-col items-center justify-center h-full min-h-[300px]">
+            <div className="flex flex-col items-center gap-4">
+              <h3 className="text-xl font-bold text-white group-hover:text-black transition-colors text-center">
+                View All Projects
+              </h3>
+              <p className="font-mono text-gray-400 text-sm text-center mb-6">
+                Explore more of my work and projects
+              </p>
+              <IconArrowRight className="w-8 h-8 text-gray-500 group-hover:text-black group-hover:translate-x-2 transition-all" />
+            </div>
+          </div>
+
+          <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-gray-500 opacity-50 group-hover:border-black"></div>
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-gray-500 opacity-50 group-hover:border-black"></div>
+        </a>
       </div>
     </div>
   </section>
