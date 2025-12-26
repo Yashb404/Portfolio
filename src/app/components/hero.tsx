@@ -1,11 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IconArrowRight } from "./icons";
 import FaultyTerminal from "../../components/FaultyTerminal";
 import TypingText from "../../components/ui/shadcn-io/typing-text/index";
 
 export const Hero = () => {
+  const [dpr, setDpr] = useState(1);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    // Cap DPR to 1.5 to improve performance on high-density mobile screens
+    if (typeof window !== "undefined") {
+      setDpr(Math.min(window.devicePixelRatio, 1.5));
+
+      // On mobile, pause the animation after 3 seconds to save battery
+      if (window.innerWidth < 768) {
+        const timer = setTimeout(() => {
+          setIsPaused(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
 
   return (
     <section id="hero" className="min-h-screen flex flex-col justify-center items-center px-6 pt-24 relative overflow-hidden">
@@ -18,7 +35,7 @@ export const Hero = () => {
           gridMul={[2, 1]}
           digitSize={1.2}
           timeScale={0.5}
-          pause={false}
+          pause={isPaused}
           scanlineIntensity={0.5}
           glitchAmount={1}
           flickerAmount={1}
@@ -30,7 +47,9 @@ export const Hero = () => {
           mouseReact={true}
           mouseStrength={0.5}
           pageLoadAnimation={true}
-          brightness={0.6} dpr={undefined}        />
+          brightness={0.6} 
+          dpr={dpr}        
+        />
       </div>
 
       <div className="max-w-4xl w-full text-center md:text-left z-10">
